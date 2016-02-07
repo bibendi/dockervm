@@ -1,0 +1,31 @@
+pg_data:
+  image: busybox
+  container_name: pg_data
+  volumes:
+    - /data
+
+pg:
+  build: pg
+  container_name: pg
+  volumes_from:
+    - pg_data
+
+ruby_data:
+  image: busybox
+  container_name: ruby_data
+  volumes:
+    - /home/worker
+
+ruby:
+  build: ruby
+  container_name: ruby
+  tty: true
+  volumes:
+    - $HOME/code:/home/worker/code
+    - $HOME/.ssh:/home/worker/.ssh:ro
+  volumes_from:
+    - ruby_data
+  ports:
+    - "3000:3000"
+  links:
+    - pg
